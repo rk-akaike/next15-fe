@@ -1,46 +1,58 @@
+interface Permission {
+  description: string;
+  dependencies?: string[];
+}
+
+interface SubFeature {
+  description: string;
+  permissions: Record<string, Permission>;
+}
+
+interface Feature {
+  description: string;
+  permissions: Record<string, SubFeature | Permission>;
+}
+
+interface Role {
+  description: string;
+  permissions: string[];
+}
+
+interface PermissionsData {
+  roles: Record<string, Role>;
+  features: Record<string, Feature>;
+}
+
 import permissionsData from "@/public/permissions.json";
 
-export const permissions = permissionsData as {
-  roles: Record<
-    string,
-    {
-      description: string;
-      access: string[];
-    }
-  >;
-  features: Record<
-    string,
-    {
-      description: string;
-      dependencies: string[];
-    }
-  >;
-};
+export const permissions = permissionsData as PermissionsData;
 
-type Role = keyof typeof permissions.roles;
-type Feature = keyof typeof permissions.features;
-
-export const getPermissionsForRole = (role: Role): string[] => {
-  const rolePermissions = permissions.roles[role]?.access || [];
+export const getPermissionsForRole = (roleName: string): string[] => {
+  const rolePermissions = permissions.roles[roleName]?.permissions || [];
   const resolvedPermissions = new Set<string>();
 
   rolePermissions.forEach((feature) => {
-    resolveDependencies(feature as Feature, resolvedPermissions);
+    resolveDependencies(feature, resolvedPermissions);
   });
 
   return Array.from(resolvedPermissions);
 };
 
 const resolveDependencies = (
-  feature: Feature,
+  feature: string,
   resolvedPermissions: Set<string>
 ) => {
   const featureData = permissions.features[feature];
-  if (featureData?.dependencies) {
-    featureData.dependencies.forEach((dependency) => {
-      if (!resolvedPermissions.has(dependency)) {
-        resolvedPermissions.add(dependency);
-        resolveDependencies(dependency as Feature, resolvedPermissions);
+  if (featureData?.permissions) {
+    Object.keys(featureData.permissions).forEach((subFeature) => {
+      const subFeatureData = featureData.permissions[subFeature];
+      if ("dependencies" in subFeatureData) {
+        subFeatureData.dependencies?.forEach((dependency) => {
+          if (!resolvedPermissions.has(dependency)) {
+            resolvedPermissions.add(dependency);
+            resolveDependencies(dependency, resolvedPermissions);
+          }
+        });
       }
     });
   }
