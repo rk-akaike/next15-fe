@@ -4,11 +4,33 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug Next.js",
+      "name": "Next.js Debug",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 9229,
-      "skipFiles": ["<node_internals>/**"]
+      "env": {
+        "NODE_OPTIONS": "--inspect"
+      },
+      "outputCapture": "std",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "http://localhost:([0-9]+)"
+      }
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Debug Client-Side Code",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Server-Side Code",
+      "skipFiles": ["<node_internals>/**"],
+      "processId": "${command:PickProcess}"
     }
   ]
 }

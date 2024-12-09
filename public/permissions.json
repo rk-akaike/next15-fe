@@ -1,0 +1,84 @@
+{
+  "roles": {
+    "admin": {
+      "description": "Administrator with full access to all resources and settings.",
+      "permissions": [
+        "datasource_view",
+        "datasource_upload",
+        "datasource_file_management",
+        "datasource_database_management",
+        "datasource_link_management",
+        "dashboard_view",
+        "chat_access",
+        "settings_access"
+      ]
+    },
+    "user": {
+      "description": "Standard user with limited access to personal features.",
+      "permissions": [
+        "datasource_view",
+        "datasource_upload",
+        "datasource_file_management",
+        "dashboard_view",
+        "chat_access"
+      ]
+    },
+    "guest": {
+      "description": "Unauthenticated user with access to limited features.",
+      "permissions": ["chat_access"]
+    },
+    "customRoles": {
+      "description": "Custom roles with specific permissions tailored to the organization.",
+      "permissions": [
+        "datasource_view",
+        "datasource_upload",
+        "datasource_file_management"
+      ]
+    }
+  },
+  "features": {
+    "datasource": {
+      "description": "Access to the data sources tab and its features.",
+      "permissions": {
+        "datasource_view": {
+          "description": "View the data sources.",
+          "sub_features": {
+            "datasource_upload": {
+              "description": "Upload files to data sources.",
+              "permissions": {
+                "datasource_file_management": {
+                  "description": "Manage files within data sources.",
+                  "dependencies": ["pdf", "csv", "excel", "docx", "mp3", "txt"]
+                },
+                "datasource_database_management": {
+                  "description": "Manage databases connected to the data source.",
+                  "dependencies": ["mysql", "mongodb", "postgresql", "sqlite"]
+                },
+                "datasource_link_management": {
+                  "description": "Manage links associated with data sources.",
+                  "dependencies": []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "dashboard": {
+      "description": "Access to the dashboard overview.",
+      "permissions": {
+        "dashboard_view": {
+          "description": "View the dashboard."
+        }
+      }
+    },
+    "chat": {
+      "description": "Access to the chat feature.",
+      "permissions": {
+        "chat_access": {
+          "description": "Use the chat feature."
+        }
+      }
+    }
+  }
+}
